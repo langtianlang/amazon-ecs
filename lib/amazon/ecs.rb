@@ -21,7 +21,7 @@
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #++
 
-require 'net/http'
+require 'typhoeus'
 require 'nokogiri'
 require 'cgi'
 require 'hmac-sha2'
@@ -119,6 +119,17 @@ module Amazon
 
     # Generic send request to ECS REST service. You have to specify the :operation parameter.
     def self.send_request(opts)
+      request = create_request(opts)
+      resp = request.run
+
+      unless resp.success?
+        raise Amazon::RequestError, "HTTP Response: #{resp.code} #{resp.body}"
+      end
+      Response.new(resp.body)
+    end
+
+    def self.create_request(opts)
+      # request = create_request(opts)
       opts = self.options.merge(opts) if self.options
 
       # Include other required options
@@ -127,11 +138,7 @@ module Amazon
       request_url = prepare_url(opts)
       log "Request URL: #{request_url}"
 
-      res = Net::HTTP.get_response(URI::parse(request_url))
-      unless res.kind_of? Net::HTTPSuccess
-        raise Amazon::RequestError, "HTTP Response: #{res.code} #{res.message}"
-      end
-      Response.new(res.body)
+      Typhoeus::Request.new(request_url)
     end
 
     def self.validate_request(opts)
