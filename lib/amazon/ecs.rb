@@ -24,7 +24,6 @@
 require 'typhoeus'
 require 'nokogiri'
 require 'cgi'
-require 'hmac-sha2'
 require 'base64'
 require 'openssl'
 
@@ -279,12 +278,8 @@ module Amazon
       def self.sign_request(url, key)
         return nil if key.nil?
 
-        if OPENSSL_DIGEST_SUPPORT
-          signature = OpenSSL::HMAC.digest(OPENSSL_DIGEST, key, url)
-          signature = [signature].pack('m').chomp
-        else
-          signature = Base64.encode64(HMAC::SHA256.digest(key, url)).strip
-        end
+        signature = OpenSSL::HMAC.digest(OPENSSL_DIGEST, key, url)
+        signature = [signature].pack('m').chomp
         signature = CGI.escape(signature)
         return signature
       end
