@@ -22,10 +22,13 @@ Gem::Specification.new do |gem|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       gem.add_runtime_dependency("nokogiri", "~> 1.4")
+      gem.add_runtime_dependency("typhoeus", ">=0.7.2")
     else
       gem.add_dependency("nokogiri", "~> 1.4")
+      gem.add_dependency("typhoeus", ">=0.7.2")
     end
   else
     gem.add_dependency("nokogiri", "~> 1.4")
+      gem.add_dependency("typhoeus", ">=0.7.2")
   end
 end
